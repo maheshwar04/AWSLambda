@@ -1,25 +1,13 @@
 # Spring Boot on AWS Lambda
 
-This project demonstrates how to deploy a Spring Boot application to AWS Lambda using the `aws-serverless-java-container` library and expose it through API Gateway.
+This project demonstrates how to deploy a Spring Boot application to AWS Lambda by using `aws-serverless-java-container-springboot3` and expose it through API Gateway.
 
 ---
-
-## 🖼️ Architecture Diagram
-
-![Architecture Diagram](path/to/your/image.png)
-
-*Replace the image path with your actual image file or URL.*
-
----
-
 ## 🛠 Prerequisites
 
 - Java 11 or later (this example uses Java 21)
 - Maven or Gradle
-- AWS CLI configured
 - Lambda Execution Role with basic permissions
-- Docker (optional)
-
 ---
 
 ## 📦 Dependencies
@@ -27,11 +15,11 @@ This project demonstrates how to deploy a Spring Boot application to AWS Lambda 
 Add the following to your `pom.xml`:
 
 ```xml
-<dependency>
-  <groupId>com.amazonaws.serverless</groupId>
-  <artifactId>aws-serverless-java-container-springboot2</artifactId>
-  <version>1.8</version>
-</dependency>
+       <dependency>
+            <groupId>com.amazonaws.serverless</groupId>
+            <artifactId>aws-serverless-java-container-springboot3</artifactId>
+            <version>2.1.2</version>
+        </dependency>
 ```
 
 ---
@@ -39,20 +27,22 @@ Add the following to your `pom.xml`:
 ## 💡 Lambda Handler Example
 
 ```java
-public class StreamLambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyResponse> {
-    private static final SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
-
+public class StreamLambdaHandler implements RequestStreamHandler {
+    private static SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
     static {
         try {
             handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(Application.class);
         } catch (ContainerInitializationException e) {
-            throw new RuntimeException("Initialization failed", e);
+            // if we fail here. We re-throw the exception to force another cold start
+            e.printStackTrace();
+            throw new RuntimeException("Could not initialize Spring Boot application", e);
         }
     }
 
     @Override
-    public AwsProxyResponse handleRequest(AwsProxyRequest input, Context context) {
-        return handler.proxy(input, context);
+    public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context)
+            throws IOException {
+        handler.proxyStream(inputStream, outputStream, context);
     }
 }
 ```
@@ -61,7 +51,7 @@ public class StreamLambdaHandler implements RequestHandler<AwsProxyRequest, AwsP
 
 ## 🚀 Deployment Process
 
-1. **Build the JAR**
+1. **Build the JAR or zip**
    ```bash
    mvn clean package
    ```
@@ -71,7 +61,7 @@ public class StreamLambdaHandler implements RequestHandler<AwsProxyRequest, AwsP
    - For this project, it is named `DemoLambda` and uses Java 21.
    - Upload the ZIP file created from your project (`.zip` containing compiled JAR and dependencies).
    - Edit the runtime to Java 21 (or your target version).
-   - Set the handler as per your package and class (e.g., `com.example.StreamLambdaHandler`).
+   - Set the handler as per your package and class (e.g., `org.example.StreamLambdaHandler::handleRequest`).
 
 3. **Test the API**
    - Use the built-in test functionality in the Lambda console.
@@ -94,18 +84,3 @@ Test it with:
 ```bash
 curl https://l0lde21y33.execute-api.us-east-1.amazonaws.com/Demoapi/ping
 ```
-
----
-
-## 📌 Notes
-
-- Lambda cold starts may affect performance.
-- Consider optimizing startup time and memory allocation.
-- Use environment variables in Lambda config for flexibility.
-- For large projects, explore AWS SAM or Terraform for deployment automation.
-
----
-
-## 📜 License
-
-MIT
