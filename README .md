@@ -46,7 +46,6 @@ public class StreamLambdaHandler implements RequestStreamHandler {
     }
 }
 ```
-
 ---
 
 ## 🚀 Deployment Process
@@ -55,6 +54,7 @@ public class StreamLambdaHandler implements RequestStreamHandler {
    ```bash
    mvn clean package
    ```
+![Screenshot 2025-04-13 233147](https://github.com/user-attachments/assets/ffdd7d22-0f41-47d2-b6f3-f0b5054c8112) 
 
 2. **Create Lambda Function (AWS Console)**
    - In the AWS Console, create a function as per your project requirements.
@@ -65,11 +65,14 @@ public class StreamLambdaHandler implements RequestStreamHandler {
 
 3. **Test the API**
    - Use the built-in test functionality in the Lambda console.
+![Screenshot 2025-04-13 234742](https://github.com/user-attachments/assets/81ddd099-5ea1-4b65-8630-68577318fbdc)
+
 
 4. **Expose via API Gateway**
    - Create a REST API in API Gateway.
    - Use Lambda Proxy integration.
    - Deploy the API to a stage (e.g., `Demoapi`).
+![Screenshot 2025-04-13 235112](https://github.com/user-attachments/assets/d410d1a3-3d0f-4876-9856-4af57ea0be41)
 
 ---
 
@@ -78,9 +81,14 @@ public class StreamLambdaHandler implements RequestStreamHandler {
 The deployed API is accessible at:
 
 👉 [`https://l0lde21y33.execute-api.us-east-1.amazonaws.com/Demoapi/ping`](https://l0lde21y33.execute-api.us-east-1.amazonaws.com/Demoapi/ping)
+![Screenshot 2025-04-13 235042](https://github.com/user-attachments/assets/119c1615-1daa-4592-a39f-eac737ab78b8)
+
+
 
 Test it with:
 
 ```bash
 curl https://l0lde21y33.execute-api.us-east-1.amazonaws.com/Demoapi/ping
 ```
+![Screenshot 2025-04-14 001425](https://github.com/user-attachments/assets/830a0ea8-dd4b-4ba9-a3a4-9f3466994273)
+
